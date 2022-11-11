@@ -19,6 +19,7 @@ for file in files_xls:
                                 int(date.split('.')[1]),
                                 int(date.split('.')[0])
                                 ).isocalendar().week-1
+    week_number = "W"+str(week_number)+"_22"
     df = pd.read_excel(path+'/'+file, header=None)
     if chain == 'DNS':
         df = df.iloc[1: , [2,4,7,9]]
