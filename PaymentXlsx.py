@@ -88,7 +88,7 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
         temp_pair_of_columns['Year'] = year
 
         temp_pair_of_columns = temp_pair_of_columns.iloc[7:]
-        temp_pair_of_columns = temp_pair_of_columns.dropna(subset=['Quantity'])
+        temp_pair_of_columns = temp_pair_of_columns.dropna(subset=['Total'])
         temp_df = temp_df.append(temp_pair_of_columns)
 
     result = base.join(temp_df, how='inner')
