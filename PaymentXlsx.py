@@ -10,12 +10,13 @@ warnings.simplefilter(action='ignore')
 start_time = datetime.now()
 print(f'Script started at: {start_time}')
 
+#Brandshop & Brandshop продавцы удалить строку store (3)
 year = 2022
 month = 11
 
-csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/Сверка {year}_{month}.csv'
+csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Сверка {year}_{month}.csv'
 
-files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}'
+files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/raw_data'
 files = os.listdir(files_path)
 
 mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
