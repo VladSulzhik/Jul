@@ -11,12 +11,15 @@ start_time = datetime.now()
 print(f'Script started at: {start_time}')
 
 #Brandshop & Brandshop продавцы удалить строку store (3)
+#Удалить лишние столбцы
+
 year = 2022
-month = 11
+month = 12
 
 csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Сверка {year}_{month}.csv'
-
+#csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Сверка {year}_{month}.csv' #Vlad
 files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/raw_data'
+#files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/raw_data' #Vlad
 files = os.listdir(files_path)
 
 mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
@@ -64,6 +67,7 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
     raw_df = pd.read_excel(files_path+'/'+file_name+'.xlsx',
                            sheet_name='Сверка продаж', header=None)
 
+    total_sum = raw_df.iloc[6, 6]
     raw_df = raw_df.iloc[:raw_df[0].isna().drop_duplicates(keep='last').index[0]+1]
 
     base = raw_df[raw_df.columns[:5]]
@@ -78,6 +82,7 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
     for start_index in range(0, len(others_columns.columns), number_of_data_columns):
         temp_pair_of_columns = others_columns.iloc[:, start_index:start_index + 2]
         temp_pair_of_columns.columns = ['Quantity', 'Total']
+        temp_pair_of_columns['CheckTotal'] = total_sum
         temp_pair_of_columns['Agency'] = temp_pair_of_columns.iloc[0, 0]
         temp_pair_of_columns['City'] = temp_pair_of_columns.iloc[1, 0]
         temp_pair_of_columns['Adress'] = str(temp_pair_of_columns.iloc[adress_row, adress_column]).replace('\n', ' ')
@@ -98,7 +103,7 @@ for file in files:
     file_name = pathlib.Path(file).stem
     chain = file_name.split('_')[0]
     file_name_clean = re.sub('[^a-zA-Zа-яА-Я]+', '', file_name)
-    #print(file_name, file_name_clean)
+
     if file_name_clean in mapping_list.keys():
         index_columns = mapping_list[file_name_clean]['index_columns']
         number_of_data_columns = mapping_list[file_name_clean]['number_of_data_columns']
@@ -106,7 +111,7 @@ for file in files:
         adress_column = mapping_list[file_name_clean]['adress_column']
         xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_row, adress_column)
     else:
-        print(file+' not loaded - check column index!')
+        print(file+' not loaded - new file!')
 
 df = pd.concat(dataframes_list)
 df.to_csv(csv_path, encoding='utf-8-sig', sep='\t', index=False)
