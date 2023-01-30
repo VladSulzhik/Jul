@@ -10,8 +10,9 @@ warnings.simplefilter(action='ignore')
 start_time = datetime.now()
 print(f'Script started at: {start_time}')
 
-#Brandshop & Brandshop продавцы удалить строку store (3)
+#Brandshop & Brandshop продавцы удалить строку store (3) - если 8 строк в шапке
 #Удалить лишние столбцы
+#Мотивация может быть не в 5 первых ячейках
 
 year = 2022
 month = 12
