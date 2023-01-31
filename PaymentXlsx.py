@@ -1,6 +1,5 @@
 import warnings
 import pandas as pd
-import numpy as np
 import os
 import re
 import pathlib
@@ -18,10 +17,12 @@ print(f'Script started at: {start_time}')
 year = 2022
 month = 12
 
-csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Сверка {year}_{month}.csv'
-#csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Сверка {year}_{month}.csv' #Vlad
-files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/raw_data'
-#files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/raw_data' #Vlad
+#sverka_csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Сверка {year}_{month}.csv'
+sverka_csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Сверка {year}_{month}.csv' #Vlad
+#fix_csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Фикс {year}_{month}.csv'
+fix_csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Фикс {year}_{month}.csv' #Vlad
+#files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/raw_data'
+files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/raw_data' #Vlad
 files = os.listdir(files_path)
 
 mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
@@ -60,55 +61,73 @@ mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adre
                 'TelepromouteryFM': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'Voltmart': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'YuSTKBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
-                'СверкапродажTyphoon': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6},
+                'СверкапродажTyphoon': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6}
                 }
 
-dataframes_list = []
+dataframes_sverka_list = []
+dataframes_fix_list = []
 
 def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_row, adress_column, fix_column):
     raw_df = pd.read_excel(files_path+'/'+file_name+'.xlsx',
                            sheet_name='Сверка продаж', header=None)
-
-    fix_rows = list(np.where(raw_df[fix_column] == 'Фикс. бонус Основа')[0])
-    fix2_rows = list(np.where(raw_df[fix_column] == 'Фикса 2')[0])
-
-    print(fix_rows, fix2_rows)
-
     total_sum = raw_df.iloc[6, 6]
-    raw_df = raw_df.iloc[:raw_df[0].isna().drop_duplicates(keep='last').index[0]+1]
 
-    base = raw_df[raw_df.columns[:5]]
-    base.columns = ['Date', 'Brand', 'Category', 'Model', 'MotivationPercent']
-    base = base.iloc[7:]
+    raw_df[fix_column].replace('Фикса 2', 'Фикс 2', inplace=True)
+    fix_df = raw_df.loc[raw_df[fix_column].isin(['Фикс. бонус Основа', 'Фикс 2', 'Фикс. бонус RF',
+                                                 'Фикс. бонус WM', 'Фикс. бонус Встройка', 'Фикс. бонус ТВ'])]
+    base_fix = fix_df.loc[:, [fix_column]]
+    base_fix.columns = ['FixType']
+    other_columns_fix = fix_df.iloc[:,
+             index_columns:
+             ((len(fix_df.columns)-index_columns) // number_of_data_columns) * number_of_data_columns + index_columns]
 
-    others_columns = raw_df[raw_df.columns[index_columns:]]
-    others_columns = others_columns.iloc[:, :(len(others_columns.columns) // number_of_data_columns) * number_of_data_columns]
-   
-    #fix_df = fix_df.iloc[fix_rows, index_columns :(len(others_columns.columns) // number_of_data_columns) * number_of_data_columns]
+    sverka_df = raw_df.iloc[:raw_df[0].isna().drop_duplicates(keep='last').index[0]+1]
 
-    temp_df = pd.DataFrame()
+    base_sverka = sverka_df[sverka_df.columns[:5]]
+    base_sverka.columns = ['Date', 'Brand', 'Category', 'Model', 'MotivationPercent']
+    base_sverka = base_sverka.iloc[7:]
+    other_columns_sverka = sverka_df.iloc[:,
+             index_columns:
+             ((len(sverka_df.columns)-index_columns) // number_of_data_columns) * number_of_data_columns + index_columns]
 
-    for start_index in range(0, len(others_columns.columns), number_of_data_columns):
-        temp_pair_of_columns = others_columns.iloc[:, start_index:start_index + 2]
-        temp_pair_of_columns.columns = ['Quantity', 'Total']
-        temp_pair_of_columns['CheckTotal'] = total_sum
-        temp_pair_of_columns['Agency'] = temp_pair_of_columns.iloc[0, 0]
-        temp_pair_of_columns['City'] = temp_pair_of_columns.iloc[1, 0]
-        temp_pair_of_columns['Adress'] = str(temp_pair_of_columns.iloc[adress_row, adress_column]).replace('\n', ' ')
-        temp_pair_of_columns['Code'] = temp_pair_of_columns.iloc[2, 0]
-        temp_pair_of_columns['Chain'] = chain
-        temp_pair_of_columns['Source'] = file_name
-        temp_pair_of_columns['Month'] = month
-        temp_pair_of_columns['Year'] = year
-        temp_pair_of_columns['FixBase'] = temp_pair_of_fix_columns.iloc[0, 0]
-        temp_pair_of_columns['Fix2'] = temp_pair_of_fix_columns.iloc[1, 0]
+    temp_df_sverka = pd.DataFrame()
+    temp_df_fix = pd.DataFrame()
 
-        temp_pair_of_columns = temp_pair_of_columns.iloc[7:]
-        temp_pair_of_columns = temp_pair_of_columns.dropna(subset=['Total'])
-        temp_df = temp_df.append(temp_pair_of_columns)
+    for start_index in range(0, len(other_columns_sverka.columns), number_of_data_columns):
+        temp_columns_sverka = other_columns_sverka.iloc[:, start_index:start_index + 2]
+        temp_columns_sverka.columns = ['Quantity', 'Total']
+        temp_columns_sverka['CheckTotal'] = total_sum
+        temp_columns_sverka['Agency'] = temp_columns_sverka.iloc[0, 0]
+        temp_columns_sverka['City'] = temp_columns_sverka.iloc[1, 0]
+        temp_columns_sverka['Adress'] = str(temp_columns_sverka.iloc[adress_row, adress_column]).replace('\n', ' ')
+        temp_columns_sverka['Code'] = temp_columns_sverka.iloc[2, 0]
+        temp_columns_sverka['Chain'] = chain
+        temp_columns_sverka['Source'] = file_name
+        temp_columns_sverka['Month'] = month
+        temp_columns_sverka['Year'] = year
 
-    result = base.join(temp_df, how='inner')
-    dataframes_list.append(result)
+        temp_columns_fix = other_columns_fix.iloc[:, start_index:start_index + 2]
+        temp_columns_fix.columns = ['Total', 'Additional']
+        temp_columns_fix['Agency'] = temp_columns_sverka.iloc[0, 0]
+        temp_columns_fix['City'] = temp_columns_sverka.iloc[1, 0]
+        temp_columns_fix['Adress'] = str(temp_columns_sverka.iloc[adress_row, adress_column]).replace('\n', ' ')
+        temp_columns_fix['Code'] = temp_columns_sverka.iloc[2, 0]
+        temp_columns_fix['Chain'] = chain
+        temp_columns_fix['Source'] = file_name
+        temp_columns_fix['Month'] = month
+        temp_columns_fix['Year'] = year
+
+        temp_columns_sverka = temp_columns_sverka.iloc[7:]
+        temp_columns_sverka = temp_columns_sverka.dropna(subset=['Total'])
+
+        temp_df_sverka = temp_df_sverka.append(temp_columns_sverka)
+        temp_df_fix = temp_df_fix.append(temp_columns_fix)
+
+    sverka_result = base_sverka.join(temp_df_sverka, how='inner')
+    dataframes_sverka_list.append(sverka_result)
+
+    fix_result = base_fix.join(temp_df_fix, how='inner')
+    dataframes_fix_list.append(fix_result)
 
 for file in files:
     file_name = pathlib.Path(file).stem
@@ -125,8 +144,11 @@ for file in files:
     else:
         print(file+' not loaded - new file!')
 
-df = pd.concat(dataframes_list)
-df.to_csv(csv_path, encoding='utf-8-sig', sep='\t', index=False)
+sverka_for_csv = pd.concat(dataframes_sverka_list)
+sverka_for_csv.to_csv(sverka_csv_path, encoding='utf-8-sig', sep='\t', index=False)
+
+fix_for_csv = pd.concat(dataframes_fix_list)
+fix_for_csv.to_csv(fix_csv_path, encoding='utf-8-sig', sep='\t', index=False)
 
 end_time = datetime.now()
 duration = end_time - start_time
