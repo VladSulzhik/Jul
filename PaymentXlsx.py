@@ -1,5 +1,6 @@
 import warnings
 import pandas as pd
+import numpy as np
 import os
 import re
 import pathlib
@@ -23,50 +24,55 @@ files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей �
 #files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/raw_data' #Vlad
 files = os.listdir(files_path)
 
-mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Brandshop': {'index_columns': 10, 'number_of_data_columns': 5, 'adress_row': 3, 'adress_column': 0},
-                'Brandshopпродавцы': {'index_columns': 10, 'number_of_data_columns': 5, 'adress_row': 3, 'adress_column': 0},
-                'BrandshopHaier': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'ComputersHaier': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'DNSKBTKBTTV': {'index_columns': 10, 'number_of_data_columns': 5, 'adress_row': 3, 'adress_column': 0},
-                'DNSTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Domotehnika': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'DomotehnikaTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Eldorado': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'EldoradoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1},
-                'EldoradoTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Eldoradovstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Eleks': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Holodilnikru': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'HolodilnikruTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'HolodilnikruVstroykaMBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'KorporaciyaCentr': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'MoyaRodnya': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'MVideo': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'MVideoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1},
-                'MvideoTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'MVideovstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Orbita': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'OrbitaVstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Patio': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'PatioMBT': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'PatioOnlayn': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'PoiskBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'RBT': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'RBTVstroyka': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'SulpakKBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'SulpakTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'TelepromouteryFM': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'Voltmart': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'YuSTKBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1},
-                'СверкапродажTyphoon': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1},
+mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Brandshop': {'index_columns': 10, 'number_of_data_columns': 5, 'adress_row': 3, 'adress_column': 0, 'fix_column': 8},
+                'Brandshopпродавцы': {'index_columns': 10, 'number_of_data_columns': 5, 'adress_row': 3, 'adress_column': 0, 'fix_column': 8},
+                'BrandshopHaier': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'ComputersHaier': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'DNSKBTKBTTV': {'index_columns': 10, 'number_of_data_columns': 5, 'adress_row': 3, 'adress_column': 0, 'fix_column': 8},
+                'DNSTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Domotehnika': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'DomotehnikaTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Eldorado': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'EldoradoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6},
+                'EldoradoTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Eldoradovstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'Eleks': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Holodilnikru': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'HolodilnikruTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'HolodilnikruVstroykaMBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'KorporaciyaCentr': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'MoyaRodnya': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'MVideo': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'MVideoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6},
+                'MvideoTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'MVideovstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'Orbita': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'OrbitaVstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Patio': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'PatioMBT': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'PatioOnlayn': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'PoiskBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'RBT': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
+                'RBTVstroyka': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'SulpakKBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'SulpakTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'TelepromouteryFM': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'Voltmart': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'YuSTKBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
+                'СверкапродажTyphoon': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6},
                 }
 
 dataframes_list = []
 
-def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_row, adress_column):
+def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_row, adress_column, fix_column):
     raw_df = pd.read_excel(files_path+'/'+file_name+'.xlsx',
                            sheet_name='Сверка продаж', header=None)
+
+    fix_rows = list(np.where(raw_df[fix_column] == 'Фикс. бонус Основа')[0])
+    fix2_rows = list(np.where(raw_df[fix_column] == 'Фикса 2')[0])
+
+    print(fix_rows, fix2_rows)
 
     total_sum = raw_df.iloc[6, 6]
     raw_df = raw_df.iloc[:raw_df[0].isna().drop_duplicates(keep='last').index[0]+1]
@@ -77,6 +83,8 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
 
     others_columns = raw_df[raw_df.columns[index_columns:]]
     others_columns = others_columns.iloc[:, :(len(others_columns.columns) // number_of_data_columns) * number_of_data_columns]
+   
+    #fix_df = fix_df.iloc[fix_rows, index_columns :(len(others_columns.columns) // number_of_data_columns) * number_of_data_columns]
 
     temp_df = pd.DataFrame()
 
@@ -92,6 +100,8 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
         temp_pair_of_columns['Source'] = file_name
         temp_pair_of_columns['Month'] = month
         temp_pair_of_columns['Year'] = year
+        temp_pair_of_columns['FixBase'] = temp_pair_of_fix_columns.iloc[0, 0]
+        temp_pair_of_columns['Fix2'] = temp_pair_of_fix_columns.iloc[1, 0]
 
         temp_pair_of_columns = temp_pair_of_columns.iloc[7:]
         temp_pair_of_columns = temp_pair_of_columns.dropna(subset=['Total'])
@@ -110,7 +120,8 @@ for file in files:
         number_of_data_columns = mapping_list[file_name_clean]['number_of_data_columns']
         adress_row = mapping_list[file_name_clean]['adress_row']
         adress_column = mapping_list[file_name_clean]['adress_column']
-        xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_row, adress_column)
+        fix_column = mapping_list[file_name_clean]['fix_column']
+        xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_row, adress_column, fix_column)
     else:
         print(file+' not loaded - new file!')
 
