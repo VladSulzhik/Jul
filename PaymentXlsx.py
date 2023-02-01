@@ -17,12 +17,16 @@ print(f'Script started at: {start_time}')
 year = 2022
 month = 12
 
-#sverka_csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Сверка {year}_{month}.csv'
-sverka_csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Сверка {year}_{month}.csv' #Vlad
-#fix_csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Фикс {year}_{month}.csv'
-fix_csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Фикс {year}_{month}.csv' #Vlad
-#files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/raw_data'
-files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/raw_data' #Vlad
+#JuliaFiles
+sverka_csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Сверка {year}_{month}.csv'
+fix_csv_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/Фикс {year}_{month}.csv'
+files_path = f'C:/Users/381/OneDrive/Рабочий стол/Time/Сергей С/{year}_{month}/raw_data'
+
+#VladFiles
+#sverka_csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Сверка {year}_{month}.csv'
+#fix_csv_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/Фикс {year}_{month}.csv'
+#files_path = f'C:/Users/vlads/OneDrive/Рабочий стол/DataView/0_Projects/Time/Сверки/{year}_{month}/raw_data'
+
 files = os.listdir(files_path)
 
 mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
@@ -103,6 +107,7 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
         temp_columns_sverka['Code'] = temp_columns_sverka.iloc[2, 0]
         temp_columns_sverka['Chain'] = chain
         temp_columns_sverka['Source'] = file_name
+        temp_columns_sverka['SourceClean'] = file_name_clean
         temp_columns_sverka['Month'] = month
         temp_columns_sverka['Year'] = year
 
@@ -114,6 +119,7 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
         temp_columns_fix['Code'] = temp_columns_sverka.iloc[2, 0]
         temp_columns_fix['Chain'] = chain
         temp_columns_fix['Source'] = file_name
+        temp_columns_fix['SourceClean'] = file_name_clean
         temp_columns_fix['Month'] = month
         temp_columns_fix['Year'] = year
 
