@@ -39,7 +39,7 @@ mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adre
                 'Domotehnika': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'DomotehnikaTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'Eldorado': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
-                'EldoradoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6},
+                'EldoradoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'EldoradoTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'Eldoradovstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
                 'Eleks': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
@@ -49,7 +49,7 @@ mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adre
                 'KorporaciyaCentr': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'MoyaRodnya': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
                 'MVideo': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
-                'MVideoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6},
+                'MVideoMBTKlimat': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'MvideoTV': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'MVideovstroyka': {'index_columns': 12, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 10},
                 'Orbita': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
@@ -65,7 +65,7 @@ mapping_list = {'Bomba': {'index_columns': 9, 'number_of_data_columns': 2, 'adre
                 'TelepromouteryFM': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'Voltmart': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
                 'YuSTKBT': {'index_columns': 9, 'number_of_data_columns': 2, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7},
-                'СверкапродажTyphoon': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 6}
+                'СверкапродажTyphoon': {'index_columns': 8, 'number_of_data_columns': 3, 'adress_row': 1, 'adress_column': 1, 'fix_column': 7}
                 }
 
 dataframes_sverka_list = []
@@ -78,7 +78,7 @@ def xlsxParser(file_name, chain, index_columns, number_of_data_columns, adress_r
 
     raw_df[fix_column].replace('Фикса 2', 'Фикс 2', inplace=True)
     fix_df = raw_df.loc[raw_df[fix_column].isin(['Фикс. бонус Основа', 'Фикс 2', 'Фикс. бонус RF',
-                                                 'Фикс. бонус WM', 'Фикс. бонус Встройка', 'Фикс. бонус ТВ'])]
+                                                 'Фикс. бонус WM', 'Фикс. бонус Встройка', 'Фикс. бонус ТВ', 'Фикс. бонус МБТ'])]
     base_fix = fix_df.loc[:, [fix_column]]
     base_fix.columns = ['FixType']
     other_columns_fix = fix_df.iloc[:,
